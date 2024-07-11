@@ -11,13 +11,27 @@ Clone the repository containing the C++ code to your local machine.
 
 Ensure that you have the necessary data files ("network.dat" and "demand.dat") formatted correctly. These files should be placed in the same directory as the C++ code.
 
-network.dat: This file should contain the network data with columns: startNode, endNode, travelTime, capacity.
+network.dat: This file should contain the network data with columns: startNode, endNode, travelTime, capacity. 
+<br/>
 demand.dat: This file should contain the demand data with columns: origin, destination, demand.
 
 3. #### Compile the Code:
 
 Navigate to the directory containing the C++ code and compile it using a C++ compiler such as g++.
-'''
-g++ -o traffic_assignment traffic_assignment.cpp
-'''
+<br/>
+`g++ -o traffic_assignment traffic_assignment.cpp
+`
+
+4. #### Run the Program:
+
+Execute the compiled program and provide the number of iterations for the Method of Successive Averages (MSA) traffic assignment.
+<br/>
+``./traffic_assignment
+``
+<br/>
+
+5. #### Output:
+
+The program will parse the input files, perform the MSA traffic assignment, and output the final flow and travel time for each link.
+
 
