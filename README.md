@@ -3,13 +3,21 @@ Traffic-Assignment is a C++ repository designed to solve the static traffic assi
 # Dependencies
 Standard Template Library (STL) for data structures and algorithms.
 # How to Run the Static Traffic Assignment Program
-1. Clone the Repository:
+1. #### Clone the Repository:
 
 Clone the repository containing the C++ code to your local machine.
 
-2. Prepare the Data:
+2. #### Prepare the Data:
 
-Ensure that you have the necessary data files (network.dat and demand.dat) formatted correctly. These files should be placed in the same directory as the C++ code.
+Ensure that you have the necessary data files ("network.dat" and "demand.dat") formatted correctly. These files should be placed in the same directory as the C++ code.
 
 network.dat: This file should contain the network data with columns: startNode, endNode, travelTime, capacity.
 demand.dat: This file should contain the demand data with columns: origin, destination, demand.
+
+3. #### Compile the Code:
+
+Navigate to the directory containing the C++ code and compile it using a C++ compiler such as g++.
+'''
+g++ -o traffic_assignment traffic_assignment.cpp
+'''
+
