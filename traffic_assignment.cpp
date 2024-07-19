@@ -166,34 +166,72 @@ void updateTravelTimes() {
     }
 }
 
-void msaTrafficAssignment(int iterations) {
-    auto adj = createGraph();
-    vector<double> temp_flow(links.size(), 0.0);
-
-    for (int iter = 1; iter <= iterations; ++iter) {
-        fill(temp_flow.begin(), temp_flow.end(), 0.0); // Reset temporary flow
-
-        // Perform All-or-Nothing Assignment
-        allOrNothingAssignment(adj, temp_flow);
-
-        // Update flow using MSA
-        double lambda = 1.0 / iter;
-        for (int i = 0; i < links.size(); ++i) {
-            links[i].flow = lambda * temp_flow[i] + (1 - lambda) * links[i].flow;
-        }
-
-        // Update travel times based on new flows
-        updateTravelTimes();
+// Calculate System Total Travel Time (TSTT)
+double calculateTSTT() {
+    double TSTT = 0.0;
+    for (const Link& link : links) {
+        TSTT += link.flow * link.travelTime;
     }
+    return TSTT;
 }
 
+// Calculate Shortest Path Total Travel Time (SPTT)
+double calculateSPTT() {
+    double SPTT = 0.0;
+    for (const Demand& demand : demands) {
+        vector<vector<pair<int, double>>> adjList = createGraph();
+        vector<int> path = dijkstra(nodes.size(), adjList, demand.origin, demand.destination);
+        for (int i = 0; i < path.size() - 1; ++i) {
+            int u = path[i];
+            int v = path[i + 1];
+
+            for (const Link& link : links) {
+                if (link.startNode == u && link.endNode == v) {
+                    SPTT += link.travelTime * demand.demand;
+                    break;
+                }
+            }
+        }
+    }
+    return SPTT;
+}
+
+// Perform MSA Traffic Assignment
+void msaTrafficAssignment(int iterations, double relativeGapThreshold) {
+    auto adj = createGraph();
+    vector<double> tempFlow(links.size(), 0.0);
+
+    for (int iter = 1; iter <= iterations; ++iter) {
+        fill(tempFlow.begin(), tempFlow.end(), 0.0); // Reset temporary flow
+
+        allOrNothingAssignment(adj, tempFlow);
+
+        double lambda = 1.0 / iter;
+        for (int i = 0; i < links.size(); ++i) {
+            links[i].flow = lambda * tempFlow[i] + (1 - lambda) * links[i].flow;
+        }
+
+        updateTravelTimes();
+
+        double TSTT = calculateTSTT();
+        double SPTT = calculateSPTT();
+        double relativeGap = (TSTT - SPTT) / SPTT;
+
+        cout << "Iteration " << iter << " - TSTT: " << TSTT << ", SPTT: " << SPTT << ", Relative Gap: " << relativeGap << endl;
+
+        if (relativeGap < relativeGapThreshold) {
+            break;
+        }
+    }
+}
 
 int main() {
     parseNetworkFile("network.dat");
     parseDemandFile("demand.dat");
 
     int iterations = 100;
-    msaTrafficAssignment(iterations);
+    double relativeGapThreshold = 0.01;
+    msaTrafficAssignment(iterations, relativeGapThreshold);
 
     for (const Link &link : links) {
         cout << "Link (" << link.startNode << " -> " << link.endNode << "): Flow = " << link.flow << ", Travel Time = " << link.travelTime << endl;
